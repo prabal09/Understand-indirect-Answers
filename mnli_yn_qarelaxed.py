@@ -414,86 +414,86 @@ print(classification_report(true_vals,preds,target_names=target_names,digits=3))
 
 #------------MNLI BASELINE----------
 
-model = BertForSequenceClassification.from_pretrained("yoshitomo-matsubara/bert-base-uncased-mnli",
-                                                      num_labels=3,
-                                                      output_attentions=False,
-                                                      output_hidden_states=False)
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model.to(device)
-
+# model = BertForSequenceClassification.from_pretrained("yoshitomo-matsubara/bert-base-uncased-mnli",
+#                                                       num_labels=3,
+#                                                       output_attentions=False,
+#                                                       output_hidden_states=False)
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # model.to(device)
 
-model
+# # model.to(device)
 
-model.eval()
+# model
 
-len(dataloader_validation)
+# model.eval()
 
-def run_baseline(model,dataloader = dataloader_validation,device=device):
-  count = 0
-  predictions, true_vals = [], []
-  while count<=len(dataloader):
-    batch = next(iter(dataloader))
-    batch = tuple(b.to(device) for b in batch)
-    inputs = {'input_ids':      batch[0],
-              'attention_mask': batch[1],
-              }
-    labels = {'labels':batch[2]}
-    with torch.no_grad():
-      outputs = model(**inputs)
-    # loss = outputs[0]
-    logits = outputs[0]
-    # loss_val_total += loss.item()
+# len(dataloader_validation)
 
-    logits = logits.detach().cpu().numpy()
-    label_ids = labels['labels'].cpu().numpy()
-    predictions.append(logits)
-    true_vals.append(label_ids)
-    count+=1
-  predictions = np.concatenate(predictions, axis=0)
-  true_vals = np.concatenate(true_vals, axis=0)
-  return predictions,true_vals
+# def run_baseline(model,dataloader = dataloader_validation,device=device):
+#   count = 0
+#   predictions, true_vals = [], []
+#   while count<=len(dataloader):
+#     batch = next(iter(dataloader))
+#     batch = tuple(b.to(device) for b in batch)
+#     inputs = {'input_ids':      batch[0],
+#               'attention_mask': batch[1],
+#               }
+#     labels = {'labels':batch[2]}
+#     with torch.no_grad():
+#       outputs = model(**inputs)
+#     # loss = outputs[0]
+#     logits = outputs[0]
+#     # loss_val_total += loss.item()
 
-def accuracy_evaluate(predictions,true_vals):
-  preds_flat = np.argmax(predictions, axis=1).flatten()
-  labels_flat = true_vals.flatten()
-  total_correct = 0;total_samples = 0
-  for label in np.unique(labels_flat):
-      y_preds = preds_flat[labels_flat==label]
-      y_true = labels_flat[labels_flat==label]
-      # print(f'Accuracy: {len(y_preds[y_preds==label])}/{len(y_true)}')
-      # print('Correct Predictions ', str(label) , len(y_preds[y_preds==label])/len(y_true))
-      total_correct += len(y_preds[y_preds==label])
-      total_samples += len(y_true)
-  print('Total Correct Predictions ',total_correct/total_samples)
+#     logits = logits.detach().cpu().numpy()
+#     label_ids = labels['labels'].cpu().numpy()
+#     predictions.append(logits)
+#     true_vals.append(label_ids)
+#     count+=1
+#   predictions = np.concatenate(predictions, axis=0)
+#   true_vals = np.concatenate(true_vals, axis=0)
+#   return predictions,true_vals
 
-batch = next(iter(dataloader_validation))
-inputs = {'input_ids':      batch[0],
-          'attention_mask': batch[1],
-          }
-labels = {'labels':batch[2]}
+# def accuracy_evaluate(predictions,true_vals):
+#   preds_flat = np.argmax(predictions, axis=1).flatten()
+#   labels_flat = true_vals.flatten()
+#   total_correct = 0;total_samples = 0
+#   for label in np.unique(labels_flat):
+#       y_preds = preds_flat[labels_flat==label]
+#       y_true = labels_flat[labels_flat==label]
+#       # print(f'Accuracy: {len(y_preds[y_preds==label])}/{len(y_true)}')
+#       # print('Correct Predictions ', str(label) , len(y_preds[y_preds==label])/len(y_true))
+#       total_correct += len(y_preds[y_preds==label])
+#       total_samples += len(y_true)
+#   print('Total Correct Predictions ',total_correct/total_samples)
 
-labels
+# batch = next(iter(dataloader_validation))
+# inputs = {'input_ids':      batch[0],
+#           'attention_mask': batch[1],
+#           }
+# labels = {'labels':batch[2]}
 
-predictions,true_vals = run_baseline(model)
+# labels
 
-accuracy_evaluate(predictions,true_vals)
+# predictions,true_vals = run_baseline(model)
 
-from sklearn.metrics import classification_report
+# accuracy_evaluate(predictions,true_vals)
 
-preds_flat = np.argmax(predictions, axis=1).flatten()
-print(classification_report(true_vals,preds_flat,digits=3))
+# from sklearn.metrics import classification_report
 
-predictions,true_vals = run_baseline(model,dataloader=dataloader_test)
+# preds_flat = np.argmax(predictions, axis=1).flatten()
+# print(classification_report(true_vals,preds_flat,digits=3))
 
-accuracy_evaluate(predictions,true_vals)
+# predictions,true_vals = run_baseline(model,dataloader=dataloader_test)
 
-np.unique(preds_flat)
+# accuracy_evaluate(predictions,true_vals)
 
-np.unique(true_vals)
+# np.unique(preds_flat)
+
+# np.unique(true_vals)
 
 
 
-preds_flat = np.argmax(predictions, axis=1).flatten()
-print(classification_report(true_vals,preds_flat,digits=3))
+# preds_flat = np.argmax(predictions, axis=1).flatten()
+# print(classification_report(true_vals,preds_flat,digits=3))
 
